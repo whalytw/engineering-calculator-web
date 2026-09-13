@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="10 位數工程用科學計算機網頁模擬器。依實體計算機的按鍵位置與操作方式設計，適合學生練習。">
+  <title>工程用科學計算機｜實體操作模擬器</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="page-head">
+    <div>
+      <div class="kicker">免費教學練習工具</div>
+      <h1>工程用科學計算機・實體操作模擬器</h1>
+      <p>直接點擊計算機上的按鍵操作。外觀、鍵位與雙功能按鍵依實體配置製作；品牌與型號標示已移除。</p>
+    </div>
+    <button id="helpToggle" class="help-toggle" type="button" aria-controls="guide" aria-expanded="true">操作說明</button>
+  </header>
+
+  <main class="page-grid">
+    <section class="simulator-card" aria-label="可操作的工程用科學計算機">
+      <div class="calculator-stage">
+        <div class="calculator-photo" id="calculatorPhoto">
+          <img src="calculator-shell.png" alt="無品牌工程用科學計算機外觀，所有按鍵都可以點擊操作" draggable="false">
+
+          <!-- Dynamic LCD overlays the static LCD shown in the shell image. -->
+          <div class="lcd-overlay" aria-live="polite" aria-atomic="true">
+            <div class="lcd-status">
+              <span id="flagShift">SHIFT</span>
+              <span id="flagHyp">HYP</span>
+              <span id="flagSd">SD</span>
+              <span id="flagAngle">DEG</span>
+              <span id="flagDisplay"></span>
+              <span id="flagK">K</span>
+              <span id="flagM">M</span>
+            </div>
+            <div class="lcd-value">
+              <span id="displayMain">0.</span><span id="displayExp"></span>
+            </div>
+          </div>
+
+          <!-- Invisible-but-clickable key hit areas aligned to the physical keys in the image. -->
+          <div class="key-layer" aria-label="計算機按鍵">
+            <button class="hotkey r1 c1" data-action="shift" data-label="SHIFT" aria-label="SHIFT"></button>
+            <button class="hotkey r1 c2" data-action="mode" data-label="MODE" aria-label="MODE；SHIFT 後為角度單位換算"></button>
+            <button class="hotkey r1 c3" data-action="square" data-label="x²" aria-label="平方 x²；SHIFT 為平方根"></button>
+            <button class="hotkey r1 c4" data-action="log" data-label="log" aria-label="常用對數 log；SHIFT 為 10 的 x 次方"></button>
+            <button class="hotkey r1 c5" data-action="ln" data-label="ln" aria-label="自然對數 ln；SHIFT 為 e 的 x 次方"></button>
+            <button class="hotkey r1 c6" data-action="on" data-label="ON" aria-label="ON 全部重設"></button>
+
+            <button class="hotkey r2 c1" data-action="frac" data-label="a b/c" aria-label="分數；SHIFT 為代分數與假分數切換"></button>
+            <button class="hotkey r2 c2" data-action="dms" data-label="°′″" aria-label="度分秒"></button>
+            <button class="hotkey r2 c3" data-action="hyp" data-label="hyp" aria-label="雙曲函數 hyp"></button>
+            <button class="hotkey r2 c4" data-action="sin" data-label="sin" aria-label="sin；SHIFT 為反正弦"></button>
+            <button class="hotkey r2 c5" data-action="cos" data-label="cos" aria-label="cos；SHIFT 為反餘弦"></button>
+            <button class="hotkey r2 c6" data-action="tan" data-label="tan" aria-label="tan；SHIFT 為反正切"></button>
+
+            <button class="hotkey r3 c1" data-action="sign" data-label="+/−" aria-label="正負號切換；SHIFT 為立方根"></button>
+            <button class="hotkey r3 c2" data-action="back" data-label="←" aria-label="退格；SHIFT 為立方"></button>
+            <button class="hotkey r3 c3" data-action="lparen" data-label="(" aria-label="左括號；SHIFT 為 x 與 y 顯示交換"></button>
+            <button class="hotkey r3 c4" data-action="rparen" data-label=")" aria-label="右括號；SHIFT 為倒數"></button>
+            <button class="hotkey r3 c5" data-action="power" data-label="xʸ" aria-label="次方；SHIFT 為 n 次方根"></button>
+            <button class="hotkey r3 c6" data-action="mr" data-label="MR" aria-label="記憶喚起 MR；SHIFT 為記憶輸入 Min"></button>
+
+            <button class="hotkey mainrow m1" data-action="digit7" data-label="7" aria-label="7；SD 模式 SHIFT 為平均數"></button>
+            <button class="hotkey mainrow m2" data-action="digit8" data-label="8" aria-label="8；SD 模式 SHIFT 為母體標準差"></button>
+            <button class="hotkey mainrow m3" data-action="digit9" data-label="9" aria-label="9；SD 模式 SHIFT 為樣本標準差"></button>
+            <button class="hotkey mainrow m4 blue" data-action="c" data-label="C" aria-label="C 清除目前輸入；SHIFT 為記憶交換"></button>
+            <button class="hotkey mainrow m5 blue" data-action="ac" data-label="AC" aria-label="AC 全部清除；SD 模式 SHIFT 為清空統計資料"></button>
+
+            <button class="hotkey mainrow2 m1" data-action="digit4" data-label="4" aria-label="4；SD 模式 SHIFT 為平方和"></button>
+            <button class="hotkey mainrow2 m2" data-action="digit5" data-label="5" aria-label="5；SD 模式 SHIFT 為總和"></button>
+            <button class="hotkey mainrow2 m3" data-action="digit6" data-label="6" aria-label="6；SD 模式 SHIFT 為資料個數"></button>
+            <button class="hotkey mainrow2 m4" data-action="mul" data-label="×" aria-label="乘法；SHIFT 為 ENG"></button>
+            <button class="hotkey mainrow2 m5" data-action="div" data-label="÷" aria-label="除法；SHIFT 為 ENG"></button>
+
+            <button class="hotkey mainrow3 m1" data-action="digit1" data-label="1" aria-label="1；SHIFT 為排列 nPr"></button>
+            <button class="hotkey mainrow3 m2" data-action="digit2" data-label="2" aria-label="2；SHIFT 為組合 nCr"></button>
+            <button class="hotkey mainrow3 m3" data-action="digit3" data-label="3" aria-label="3；SHIFT 為階乘"></button>
+            <button class="hotkey mainrow3 m4" data-action="plus" data-label="+" aria-label="加法；SHIFT 為直角座標轉極座標"></button>
+            <button class="hotkey mainrow3 m5" data-action="minus" data-label="−" aria-label="減法；SHIFT 為極座標轉直角座標"></button>
+
+            <button class="hotkey mainrow4 m1" data-action="digit0" data-label="0" aria-label="0；SHIFT 為 RND"></button>
+            <button class="hotkey mainrow4 m2" data-action="decimal" data-label="." aria-label="小數點；SHIFT 為隨機數"></button>
+            <button class="hotkey mainrow4 m3" data-action="expkey" data-label="EXP" aria-label="EXP；SHIFT 為圓周率 π"></button>
+            <button class="hotkey mainrow4 m4" data-action="equals" data-label="=" aria-label="等號；SHIFT 為百分比"></button>
+            <button class="hotkey mainrow4 m5" data-action="mplus" data-label="M+" aria-label="記憶加法 M+；SHIFT 為 M 減；SD 模式為 DATA 與 DEL"></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="interaction-strip">
+        <div><span class="strip-label">最近按鍵</span><span id="history">—</span></div>
+        <button id="clearHistory" type="button">清除紀錄</button>
+      </div>
+      <p class="disclaimer">這是非原廠、無品牌標示的教學模擬器。計算核心在瀏覽器本機執行，不會把學生輸入送到伺服器。</p>
+    </section>
+
+    <aside class="guide" id="guide">
+      <section class="guide-card important">
+        <h2>操作方式和實體機一樣</h2>
+        <p>這一型的科學函數多半是<strong>先輸入數值，再按函數鍵</strong>。</p>
+        <div class="example-grid">
+          <div><b>√2</b><code>2 → SHIFT → x²</code></div>
+          <div><b>sin 45°</b><code>45 → sin</code></div>
+          <div><b>log 100</b><code>100 → log</code></div>
+          <div><b>8!</b><code>8 → SHIFT → 3</code></div>
+        </div>
+      </section>
+
+      <section class="guide-card">
+        <h2>MODE 模式切換</h2>
+        <table>
+          <tbody>
+            <tr><th>SD</th><td><kbd>MODE</kbd> <kbd>.</kbd></td><td>統計模式</td></tr>
+            <tr><th>COMP</th><td><kbd>MODE</kbd> <kbd>0</kbd></td><td>一般計算</td></tr>
+            <tr><th>DEG</th><td><kbd>MODE</kbd> <kbd>4</kbd></td><td>角度（度）</td></tr>
+            <tr><th>RAD</th><td><kbd>MODE</kbd> <kbd>5</kbd></td><td>弧度</td></tr>
+            <tr><th>GRA</th><td><kbd>MODE</kbd> <kbd>6</kbd></td><td>百分度</td></tr>
+            <tr><th>FIX</th><td><kbd>MODE</kbd> <kbd>7</kbd> <kbd>0–9</kbd></td><td>固定小數位</td></tr>
+            <tr><th>SCI</th><td><kbd>MODE</kbd> <kbd>8</kbd> <kbd>0–9</kbd></td><td>有效位數</td></tr>
+            <tr><th>NORM</th><td><kbd>MODE</kbd> <kbd>9</kbd></td><td>NORM 1 / 2 切換</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="guide-card">
+        <h2>DEG / RAD 怎麼選？</h2>
+        <p>題目寫 <strong>30°、45°、60°</strong> 時，先設 <strong>DEG</strong>：<kbd>MODE</kbd> <kbd>4</kbd>。</p>
+        <p>題目使用 <strong>π/6、π/4、π/3</strong> 時，先設 <strong>RAD</strong>：<kbd>MODE</kbd> <kbd>5</kbd>。</p>
+        <p class="callout">RAD 模式算 sin(π/6)：<br><code>SHIFT → EXP(π) → ÷ → 6 → = → sin</code>，結果為 0.5。</p>
+        <p>也可用 <kbd>SHIFT</kbd> <kbd>MODE</kbd> 後按 <kbd>5</kbd>/<kbd>6</kbd>/<kbd>7</kbd>，把目前顯示的角度值換算成 RAD / GRA / DEG。</p>
+      </section>
+
+      <section class="guide-card">
+        <h2>常用第二功能</h2>
+        <ul>
+          <li><kbd>SHIFT</kbd> + <b>x²</b>：√x</li>
+          <li><kbd>SHIFT</kbd> + <b>log</b>：10ˣ</li>
+          <li><kbd>SHIFT</kbd> + <b>ln</b>：eˣ</li>
+          <li><kbd>SHIFT</kbd> + <b>sin/cos/tan</b>：反三角函數</li>
+          <li><kbd>SHIFT</kbd> + <b>EXP</b>：π</li>
+          <li><kbd>SHIFT</kbd> + <b>=</b>：%</li>
+          <li><kbd>SHIFT</kbd> + <b>1/2/3</b>：nPr / nCr / x!</li>
+        </ul>
+      </section>
+
+      <section class="guide-card">
+        <h2>SD 統計模式</h2>
+        <p>先按 <kbd>MODE</kbd> <kbd>.</kbd>。輸入資料後按 <b>M+</b>，此時 M+ 會當作 <b>DATA</b>；<kbd>SHIFT</kbd> + <b>M+</b> 會當作 <b>DEL</b>。</p>
+        <p><kbd>SHIFT</kbd> + 7/8/9 可求 x̄、σn、σn−1；<kbd>SHIFT</kbd> + 4/5/6 可求 Σx²、Σx、n。</p>
+      </section>
+
+      <section class="guide-card compact-card">
+        <h2>電腦鍵盤快捷鍵</h2>
+        <p><code>0–9</code>、<code>.</code>、<code>+ − * /</code>、<code>( )</code>、Enter、Backspace、Esc 可直接使用。</p>
+      </section>
+    </aside>
+  </main>
+
+  <footer>純 HTML / CSS / JavaScript，可直接部署到 GitHub Pages。</footer>
+  <script src="engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
