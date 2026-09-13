@@ -62,6 +62,9 @@
 
     clearAll(keepModes=true){
       this.tokens=[]; this.entry='0'; this.entering=true; this.currentValue=0; this.operandReady=true;
+      // Transient real-machine cue shown immediately after pressing an opening parenthesis.
+      // 1 unmatched '(' => C01, 2 unmatched '(' => C02, etc.
+      this.parenCue=0;
       this.lastWasEquals=false; this.error=null; this.percentContext=null;
       this.fractionParts=[]; this.fractionUsed=false; this.fractionEligible=false; this.fractionDisplay=false; this.improperFraction=false;
       this.decimalUsed=false; this.nonRationalUsed=false; this.dmsParts=[]; this.dmsDisplay=null; this.dmsUsed=false; this.dmsMixedDecimal=false;
@@ -205,9 +208,16 @@
     pressParen(p){
       if(this.error) return;
       if(p==='('){
-        if(this.entering && !(this.entry==='0' && this.tokens.length===0)){ return; }
-        this.tokens.push('('); this.entry='0'; this.entering=true; this.operandReady=false; this.lastWasEquals=false;
+        // A second '(' is valid while the just-opened parenthesis still shows 0.
+        // This mirrors the physical calculator's C01/C02/... nesting cue.
+        const justOpened = this.parenCue>0 && this.entering && this.entry==='0';
+        if(this.entering && !justOpened && !(this.entry==='0' && this.tokens.length===0)){ return; }
+        this.tokens.push('(');
+        this.entry='0'; this.entering=true; this.operandReady=false; this.lastWasEquals=false;
+        const opens=this.tokens.reduce((n,t)=>n+(t==='('?1:(t===')'?-1:0)),0);
+        this.parenCue=Math.max(0,opens);
       } else {
+        this.parenCue=0;
         this._finalizeSpecialInput(); if(this.error) return;
         if(this.entering || this.entry===null) this._pushCurrentIfNeeded();
         this.tokens.push(')'); this.entering=false; this.operandReady=true;
@@ -238,9 +248,23 @@
 
     _pushCurrentIfNeeded(){
       if(this.error) return;
+
+      // A closing parenthesis already represents a complete operand in the
+      // token stream.  Do NOT append currentValue again after ')'.  The old
+      // behavior duplicated the parenthesized result, turning an expression
+      // such as (9+6)*5 into: (9+6) 15 * 5, which correctly tripped the
+      // expression checker but appeared to the user as -E-.
+      const last = this.tokens.length ? this.tokens[this.tokens.length-1] : null;
+      if(last===')'){
+        this.entry=null;
+        this.entering=false;
+        this.operandReady=true;
+        return;
+      }
+
       let v=this.currentValue;
       if(this.entering) v=this._parseEntry();
-      if(this.tokens.length===0 || typeof this.tokens[this.tokens.length-1]==='string') this.tokens.push(v);
+      if(this.tokens.length===0 || typeof last==='string') this.tokens.push(v);
       this.currentValue=v; this.entry=null; this.entering=false; this.operandReady=true;
     }
 
@@ -435,7 +459,12 @@
     }
     swapMemory(){ const x=this.entering?this._parseEntry():this.currentValue; const m=this.memory; this.memory=x; this.setValue(m); this.shift=false; }
 
-    statClear(){ this.stats=[]; this.shift=false; }
+    statClear(){
+      // SAC (SHIFT + AC) in SD mode: erase every DATA value and return to
+      // a clean zero-data statistical state, while keeping SD/angle/display modes.
+      this.stats=[];
+      this.clearAll();
+    }
     statAdd(){
       if(this.calcMode!=='SD') return;
       // Frequency shorthand: value * frequency DATA
@@ -458,7 +487,13 @@
     }
     statValue(kind){
       if(this.calcMode!=='SD'){this._setError();return;}
-      const n=this.stats.length; if(n===0){this._setError();return;}
+      const n=this.stats.length;
+      // With no data, n, Σx and Σx² are still meaningful as zero. Mean and
+      // standard deviations are undefined and therefore keep the error behavior.
+      if(n===0){
+        if(kind==='n' || kind==='sum' || kind==='sumsq'){ this.setValue(0,true); this.shift=false; return; }
+        this._setError(); return;
+      }
       const sum=this.stats.reduce((a,b)=>a+b,0), sumsq=this.stats.reduce((a,b)=>a+b*b,0), mean=sum/n;
       let r;
       if(kind==='mean') r=mean; else if(kind==='n')r=n; else if(kind==='sum')r=sum; else if(kind==='sumsq')r=sumsq;
@@ -543,6 +578,9 @@
 
     handleKey(action){
       const shifted=this.shift;
+      // The C01/C02/... parenthesis cue is transient: it is shown only immediately
+      // after an unshifted '(' key. Any other key makes the cue disappear.
+      if(action!=='lparen' || shifted) this.parenCue=0;
       // Mode consumes next key before shift routing.
       if(this.modePending || this.precisionPending || this.angleConvertPending){
         if(action==='decimal') return this.inputDecimal();

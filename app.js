@@ -4,6 +4,7 @@
   const $ = (s) => document.querySelector(s);
   const main = $('#displayMain');
   const exp = $('#displayExp');
+  const parenCue = $('#parenCue');
   const historyEl = $('#history');
   const history = [];
   const flags = {
@@ -18,6 +19,7 @@
     const d = calc.formatDisplay();
     main.textContent = d.main;
     exp.textContent = d.exp || '';
+    parenCue.textContent = calc.parenCue ? `C${String(calc.parenCue).padStart(2,'0')}` : '';
     toggleFlag(flags.shift, d.flags.shift);
     toggleFlag(flags.hyp, d.flags.hyp);
     toggleFlag(flags.sd, d.flags.mode === 'SD');

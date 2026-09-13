@@ -224,3 +224,29 @@ footer{padding:2px 20px 18px;text-align:center;color:#7a8791;font-size:12px}
   #displayExp{font-size:10px}
   .hotkey:hover{box-shadow:none;background:transparent}
 }
+
+/* Real-machine parenthesis nesting cue: C01, C02, ... appears at the left
+   side of the LCD only immediately after pressing an opening parenthesis. */
+.lcd-number-group{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  min-width:0;
+  height:100%;
+}
+#parenCue{
+  flex:0 0 auto;
+  align-self:center;
+  margin-left:1.2%;
+  margin-right:2%;
+  font-family:"Courier New",Consolas,monospace;
+  font-size:clamp(16px,3.15vw,28px);
+  font-weight:500;
+  letter-spacing:-.08em;
+  line-height:1;
+  transform:scaleX(.72);
+  transform-origin:left center;
+  color:#19313b;
+}
+#parenCue:empty{display:none}
