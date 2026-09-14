@@ -13,7 +13,46 @@
   };
   const shiftButton = $('[data-action="shift"]');
 
+  // Calculator zoom controls. 100% always means the responsive size the page
+  // would normally use on the current browser/window.
+  const calculatorPhoto = $('#calculatorPhoto');
+  const zoomInButton = $('#zoomIn');
+  const zoomOutButton = $('#zoomOut');
+  const zoomResetButton = $('#zoomReset');
+  const zoomPercentEl = $('#zoomPercent');
+  const ZOOM_MIN = 70;
+  const ZOOM_MAX = 200;
+  const ZOOM_STEP = 10;
+  let zoomPercent = 100;
+  let baseCalculatorWidth = 0;
+  let resizeTimer = 0;
+
   function toggleFlag(el, on){ el.classList.toggle('on', !!on); }
+
+  function applyCalculatorZoom(){
+    if(!calculatorPhoto || !baseCalculatorWidth) return;
+    calculatorPhoto.style.width = `${baseCalculatorWidth * zoomPercent / 100}px`;
+    zoomPercentEl.textContent = `${zoomPercent}%`;
+    zoomInButton.disabled = zoomPercent >= ZOOM_MAX;
+    zoomOutButton.disabled = zoomPercent <= ZOOM_MIN;
+    zoomResetButton.disabled = zoomPercent === 100;
+  }
+
+  function measureBaseCalculatorWidth(){
+    if(!calculatorPhoto) return;
+    // Remove the inline zoomed width so CSS can determine this browser's
+    // responsive 100% size, then scale from that baseline.
+    calculatorPhoto.style.width = '';
+    const measured = calculatorPhoto.getBoundingClientRect().width;
+    if(measured > 0) baseCalculatorWidth = measured;
+    applyCalculatorZoom();
+  }
+
+  function setCalculatorZoom(nextPercent){
+    const snapped = Math.round(nextPercent / ZOOM_STEP) * ZOOM_STEP;
+    zoomPercent = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, snapped));
+    applyCalculatorZoom();
+  }
 
   function render(){
     const d = calc.formatDisplay();
@@ -68,6 +107,17 @@
   });
 
   $('#clearHistory').addEventListener('click', () => { history.length = 0; render(); });
+
+  zoomInButton?.addEventListener('click', () => setCalculatorZoom(zoomPercent + ZOOM_STEP));
+  zoomOutButton?.addEventListener('click', () => setCalculatorZoom(zoomPercent - ZOOM_STEP));
+  zoomResetButton?.addEventListener('click', () => setCalculatorZoom(100));
+
+  // Recalculate what 100% means if the user resizes the browser or rotates a tablet.
+  window.addEventListener('resize', () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(measureBaseCalculatorWidth, 120);
+  });
+
   const helpToggle = $('#helpToggle');
   const guide = $('#guide');
   helpToggle?.addEventListener('click', () => {
@@ -77,5 +127,8 @@
   });
 
   render();
+  // Measure after the first layout pass so 100% exactly matches the original
+  // responsive calculator size on this machine.
+  window.requestAnimationFrame(measureBaseCalculatorWidth);
   window.calculatorEngine = calc;
 })();

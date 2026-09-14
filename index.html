@@ -19,7 +19,8 @@
 
   <main class="page-grid">
     <section class="simulator-card" aria-label="可操作的工程用科學計算機">
-      <div class="calculator-stage">
+      <div class="calculator-workspace">
+        <div class="calculator-stage">
         <div class="calculator-photo" id="calculatorPhoto">
           <img src="calculator-shell.png" alt="無品牌工程用科學計算機外觀，所有按鍵都可以點擊操作" draggable="false">
 
@@ -87,6 +88,16 @@
             <button class="hotkey mainrow4 m4" data-action="equals" data-label="=" aria-label="等號；SHIFT 為百分比"></button>
             <button class="hotkey mainrow4 m5" data-action="mplus" data-label="M+" aria-label="記憶加法 M+；SHIFT 為 M 減；SD 模式為 DATA 與 DEL"></button>
           </div>
+        </div>
+        </div>
+
+        <div class="zoom-controls" aria-label="計算機縮放控制">
+          <span class="zoom-title">縮放</span>
+          <button id="zoomIn" class="zoom-btn" type="button" aria-label="放大計算機 10%" title="放大 10%">＋</button>
+          <output id="zoomPercent" class="zoom-percent" aria-live="polite">100%</output>
+          <button id="zoomOut" class="zoom-btn" type="button" aria-label="縮小計算機 10%" title="縮小 10%">−</button>
+          <button id="zoomReset" class="zoom-reset" type="button" aria-label="恢復計算機為 100%" title="恢復 100%">100%</button>
+          <span class="zoom-range">70–200%</span>
         </div>
       </div>
 

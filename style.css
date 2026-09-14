@@ -51,11 +51,17 @@ h1{margin:0;font-size:clamp(22px,2.6vw,34px);letter-spacing:.01em;line-height:1.
   box-shadow:var(--shadow);
 }
 .simulator-card{padding:14px}
+.calculator-workspace{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 52px;
+  gap:8px;
+  align-items:start;
+}
 .calculator-stage{
   display:flex;
-  justify-content:center;
+  justify-content:flex-start;
   padding:0;
-  overflow:hidden;
+  overflow:auto;
   border-radius:14px;
   background:#fff;
 }
@@ -66,6 +72,61 @@ h1{margin:0;font-size:clamp(22px,2.6vw,34px);letter-spacing:.01em;line-height:1.
   user-select:none;
   -webkit-user-select:none;
   touch-action:manipulation;
+  flex:0 0 auto;
+  margin-inline:auto;
+}
+
+.zoom-controls{
+  position:sticky;
+  top:8px;
+  width:52px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  padding:8px 4px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#f8fafb;
+  box-shadow:0 6px 18px rgba(20,32,44,.07);
+}
+.zoom-title{
+  font-size:11px;
+  font-weight:800;
+  color:#637482;
+  letter-spacing:.04em;
+}
+.zoom-btn,.zoom-reset{
+  width:42px;
+  min-height:38px;
+  border:1px solid #cbd6de;
+  border-radius:9px;
+  background:#fff;
+  color:#17344d;
+  cursor:pointer;
+  font-family:inherit;
+  font-weight:800;
+  box-shadow:0 1px 2px rgba(20,32,44,.06);
+}
+.zoom-btn{font-size:24px;line-height:1}
+.zoom-reset{font-size:11px;padding:4px 2px}
+.zoom-btn:hover,.zoom-reset:hover{background:#eef6fc;border-color:#9fc4df}
+.zoom-btn:active,.zoom-reset:active{transform:translateY(1px)}
+.zoom-btn:disabled{opacity:.35;cursor:not-allowed;background:#f2f4f6}
+.zoom-percent{
+  width:46px;
+  padding:5px 1px;
+  border-radius:7px;
+  background:#e8f2fa;
+  color:#0b5b94;
+  font:800 12px/1.2 Consolas,"Courier New",monospace;
+  text-align:center;
+}
+.zoom-range{
+  font-size:9px;
+  line-height:1.15;
+  text-align:center;
+  color:#87939d;
 }
 .calculator-photo>img{
   width:100%;height:100%;display:block;object-fit:contain;pointer-events:none;
@@ -213,6 +274,10 @@ footer{padding:2px 20px 18px;text-align:center;color:#7a8791;font-size:12px}
   .page-head{padding:16px 10px 8px;align-items:flex-start}
   .page-head p{font-size:13px}
   .page-grid{padding:4px 8px 18px;gap:14px}
+  .calculator-workspace{grid-template-columns:minmax(0,1fr) 48px;gap:5px}
+  .zoom-controls{width:48px;padding:7px 3px;gap:5px}
+  .zoom-btn,.zoom-reset{width:40px}
+  .zoom-percent{width:42px;font-size:11px}
   .simulator-card{padding:7px;border-radius:12px}
   .calculator-stage{border-radius:9px}
   .interaction-strip{margin-top:7px;padding:8px}
